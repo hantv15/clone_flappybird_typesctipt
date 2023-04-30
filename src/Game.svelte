@@ -8,7 +8,7 @@
   function jump() {
     game.jump();
   }
- 
+
   function startGame() {
     frame = game.start();
   }
@@ -16,9 +16,37 @@
   setInterval(() => {
     frame = game.nextFrame();
   }, 1000 / 90);
-
 </script>
-<svelte:window on:click={jump}/>
+
+<svelte:window on:click={jump} />
+
+<div class="flex-container">
+  <main style="width: {frame.width}px; height: {frame.height}px;" class="game">
+    <section id="score">{frame.score}</section>
+    <Bird bind:bird={frame.bird} />
+    <Pipe bind:pipe={frame.firstPipe} />
+    <Pipe bind:pipe={frame.secondPipe} />
+    {#if frame.gameOver || !frame.gameStarted}
+      <section id="init-screen">
+        {#if frame.gameOver}
+          <h2>Game Over</h2>
+          <h2>Score {frame.score}</h2>
+        {/if}
+        <button on:click={startGame}>Start Game</button>
+      </section>
+    {/if}
+    <section style="height: {frame.ground.height}px;" id="ground" />
+  </main>
+  <textarea
+    style="width: {frame.width}px; height: {frame.height}px;"
+    class="game"
+    id="myTextarea"
+    cols="30"
+    rows="10"
+    value={JSON.stringify(frame, undefined, 4)}
+  />
+</div>
+
 <style>
   main {
     position: relative;
@@ -81,21 +109,22 @@
   #init-screen h2 {
     text-align: center;
   }
+  #myTextarea {
+    width: 100%;
+    min-height: 30rem;
+    font-family: "Lucida Console", Monaco, monospace;
+    font-size: 0.8rem;
+    line-height: 1.2;
+  }
+
+  .flex-container {
+    display: flex;
+  }
+
+  .flex-container > div {
+    background-color: #f1f1f1;
+    margin: 10px;
+    padding: 20px;
+    font-size: 30px;
+  }
 </style>
-  
-<main style="width: {frame.width}px; height: {frame.height}px;" class="game">
-  <section id="score">{frame.score}</section>
-  <Bird bind:bird="{frame.bird}" />
-  <Pipe bind:pipe="{frame.firstPipe}" />
-  <Pipe bind:pipe="{frame.secondPipe}" />
-  {#if frame.gameOver || !frame.gameStarted}
-  <section id="init-screen">
-    {#if frame.gameOver}
-    <h2>Game Over</h2>
-    <h2>Score {frame.score}</h2>
-    {/if}
-    <button on:click="{startGame}">Start Game</button>
-  </section>
-  {/if}
-  <section style="height: {frame.ground.height}px;" id="ground"></section>
-</main>
